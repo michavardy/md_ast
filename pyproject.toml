@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "discord_markdown_ast_parser"
-version = "1.0.6"
-description = "Markdown Parser for Discord messages that creates an abstract syntax tree"
-authors = ["Tim Schmidt <w4rum@khorne.faith>"]
+name = "md_ast"
+version = "0.0.1"
+description = "Minimal Markdown Parser that creates an abstract syntax tree"
+authors = ["Micha Vardy"]
 readme = "README.md"
 license = "MIT"
-homepage = "https://github.com/w4rum/discord-markdown-ast-parser"
-repository = "https://github.com/w4rum/discord-markdown-ast-parser"
-documentation = "https://github.com/w4rum/discord-markdown-ast-parser"
+homepage = "https://github.com/michavardy/md_ast"
+repository = "https://github.com/michavardy/md_ast"
+documentation = "https://github.com/michavardy/md_ast"
 
 [tool.poetry.dependencies]
 python = "^3.8"

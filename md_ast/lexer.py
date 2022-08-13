@@ -37,38 +37,12 @@ class LexingRule:
 
 
 def lex(input_text: str) -> Generator[Token, None, None]:
-    """
-    Scans the input text for sequences of characters (=tokens), identified by regular
-    expressions, that have a special meaning in Discord's Markdown.
-
-    This function takes care of identifying the low-level elements of the text such as
-    markdown special characters. It also does pretty much all of the parsing work for
-    simple structures such as user mentions that can be identified via regular
-    expressions.
-
-    Will output the tokens in the order that they appear in the input text.
-    """
-    # There will be cases when no specific lexing rules matches.
-    #
-    # This happens when what we're looking at is just simple text with no special
-    # markdown meaning.
-    #
-    # Problem is: We're generally only trying to match our regex pattern against the
-    # prefix of what we're looking at, so if we go through all of our rules and end up
-    # noticing "Oh, that's just text", then we don't know how long that text segment
-    # is going to be.
-    #
-    # So we're going to continue scanning until we arrive at something that is not just
-    # text, at which point we're going to output all the text we've found as a single
-    # text token.
     seen_simple_text = ""
-
     while True:
         if len(input_text) == 0:
             if len(seen_simple_text) > 0:
                 yield Token(TokenType.TEXT_INLINE, seen_simple_text)
             return
-
         for rule in lexing_rules:
             match = re.match(rule.pattern, input_text)
             if match is not None:
@@ -78,7 +52,6 @@ def lex(input_text: str) -> Generator[Token, None, None]:
             seen_simple_text += input_text[0]
             input_text = input_text[1:]
             continue  # don't yield a token in this run
-
         # cut off matched part
         input_text = input_text[len(match[0]):]
 

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Generator, Any, List, Dict, Tuple, Iterable
 
-from discord_markdown_ast_parser.lexer import Token, TokenType
+from md_ast.lexer import Token, TokenType
 
 
 class NodeType(Enum):

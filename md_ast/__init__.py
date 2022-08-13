@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 
-from discord_markdown_ast_parser.lexer import lex
-from discord_markdown_ast_parser.parser import Node, parse_tokens
+from md_ast.lexer import lex
+from md_ast.parser import Node, parse_tokens
 
 
 def parse(text) -> List[Node]:
