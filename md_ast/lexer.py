@@ -1,26 +1,11 @@
 import re
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, auto
 from typing import Optional, List, Generator
 
 
 class TokenType(Enum):
-    TEXT_INLINE = 1
-    NEWLINE = 2
-    STAR = 3
-    UNDERSCORE = 4
-    TILDE = 5
-    SPOILER_DELIMITER = 6
-    USER_MENTION = 7
-    ROLE_MENTION = 8
-    CHANNEL_MENTION = 9
-    EMOJI_CUSTOM = 10
-    EMOJI_UNICODE_ENCODED = 11
-    URL_WITH_PREVIEW = 12
-    URL_WITHOUT_PREVIEW = 13
-    QUOTE_LINE_PREFIX = 14
-    CODE_INLINE_DELIMITER = 15
-    CODE_BLOCK_DELIMITER = 16
+    NEWLINE = auto()
 
 
 @dataclass
@@ -34,6 +19,11 @@ class Token:
 class LexingRule:
     token_type: TokenType
     pattern: Optional[str] = None
+
+
+lexing_rules = [
+    LexingRule(token_type=TokenType.NEWLINE, pattern="\n"),
+]
 
 
 def lex(input_text: str) -> Generator[Token, None, None]:
@@ -54,40 +44,17 @@ def lex(input_text: str) -> Generator[Token, None, None]:
             continue  # don't yield a token in this run
         # cut off matched part
         input_text = input_text[len(match[0]):]
-
         # yield inline text if we have some left
         if len(seen_simple_text) > 0:
             yield Token(TokenType.TEXT_INLINE, seen_simple_text)
             seen_simple_text = ""
-
         groups = None
         if len(match.groups()) > 0:
             groups = match.groups()
-
         yield Token(matching_rule.token_type, match[0], groups)
 
 
-# stolen from https://www.urlregex.com/
-URL_REGEX = (
-    r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
-)
+if __name__ == "__main__":
+    sample_text = "something\nsomethingelse"
+    tokens = lex(sample_text)
 
-lexing_rules = [
-    LexingRule(token_type=TokenType.USER_MENTION, pattern="<@!?([0-9]+)>"),
-    LexingRule(token_type=TokenType.ROLE_MENTION, pattern="<@&([0-9]+)>"),
-    LexingRule(token_type=TokenType.CHANNEL_MENTION, pattern="<#([0-9]+)>"),
-    LexingRule(
-        token_type=TokenType.EMOJI_CUSTOM, pattern="<:([a-zA-Z0-9_]{2,}):([0-9]+)>"
-    ),
-    LexingRule(token_type=TokenType.EMOJI_UNICODE_ENCODED, pattern=":([a-zA-Z0-9_]+):"),
-    LexingRule(token_type=TokenType.URL_WITHOUT_PREVIEW, pattern=f"<{URL_REGEX}>"),
-    LexingRule(token_type=TokenType.URL_WITH_PREVIEW, pattern=URL_REGEX),
-    LexingRule(token_type=TokenType.QUOTE_LINE_PREFIX, pattern=r"(>>)?> "),
-    LexingRule(token_type=TokenType.TILDE, pattern=r"~"),
-    LexingRule(token_type=TokenType.STAR, pattern=r"\*"),
-    LexingRule(token_type=TokenType.UNDERSCORE, pattern=r"_"),
-    LexingRule(token_type=TokenType.SPOILER_DELIMITER, pattern=r"\|\|"),
-    LexingRule(token_type=TokenType.CODE_BLOCK_DELIMITER, pattern=r"```"),
-    LexingRule(token_type=TokenType.CODE_INLINE_DELIMITER, pattern=r"`"),
-    LexingRule(token_type=TokenType.NEWLINE, pattern="\n"),
-]
